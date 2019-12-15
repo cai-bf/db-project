@@ -13,8 +13,9 @@ def auth():
         pass
         # next
     else:
-        try:
-            user_id = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])['user_id']
-        except:
+        if token is None:
+            return {'errmsg': '未登录或已过期', 'errcode': 401}, 401
+        user_id = app.redis.get(token)
+        if user_id is None:
             return {'errmsg': '未登录或已过期', 'errcode': 401}, 401
         g.current_user = User.query.get(user_id)

@@ -1,9 +1,14 @@
 # coding:utf-8
 import datetime
-from time import time
+import random
+import string
+
 from app import db, app
 from werkzeug.security import generate_password_hash, check_password_hash
-import jwt
+
+
+def rand_token_str(size=128):
+    return ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits) for _ in range(size))
 
 
 class User(db.Model):
@@ -31,9 +36,10 @@ class User(db.Model):
     def check_password(self, pswd):
         return check_password_hash(self.password, pswd)
 
-    def get_token(self, expires_on=600):
-        return jwt.encode({'user_id': self.id, 'exp': time() + expires_on},
-                          app.config['SECRET_KEY']).decode('utf-8')
+    def get_token(self, expires_on=7200):
+        token = rand_token_str()
+        app.redis.set(token, self.id, ex=expires_on)
+        return token
 
     def to_dict(self):
         return {

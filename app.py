@@ -3,6 +3,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from config import Config
+import redis
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -11,6 +12,10 @@ app = Flask(__name__)
 app.config.from_object(Config)
 db.init_app(app)
 migrate.init_app(app, db)
+
+pool = redis.ConnectionPool(host='localhost', port=6379, decode_responses=True)
+r = redis.Redis(connection_pool=pool)
+app.redis = r
 
 from middleware.auth import *
 

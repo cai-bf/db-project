@@ -1,6 +1,6 @@
 # coding:utf-8
 from flask import Blueprint, request
-from app import db
+from app import db, app
 from model.user import User
 
 
@@ -34,3 +34,9 @@ def register():
     db.session.add(user)
     db.session.commit()
     return {'errmsg': '注册成功', 'errcode': '200'}, 200
+
+
+@auth.route('/logout', methods=['GET'])
+def logout():
+    app.redis.delete(request.headers.get('Authorization'))
+    return {'errmsg': '退出成功', 'errcode': 200}, 200
