@@ -1,0 +1,48 @@
+# coding:utf-8
+import datetime
+from time import time
+from app import db, app
+from werkzeug.security import generate_password_hash, check_password_hash
+import jwt
+
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(64), unique=True)
+    password = db.Column(db.String(128))
+    name = db.Column(db.String(32))
+    created_at = db.Column(db.DateTime, default=datetime.datetime.now)
+    updated_at = db.Column(db.DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now)
+
+    goods = db.relationship('Goods', backref='vendor', lazy='dynamic')
+
+    comments = db.relationship('Comment', backref='user', lazy='dynamic')
+
+    orders = db.relationship('Order', foreign_keys='Order.user_id', backref='user', lazy='dynamic')  # 购买的订单
+
+    sold = db.relationship('Order', foreign_keys='Order.owner_id', backref='owner', lazy='dynamic')  # 卖出的订单
+
+    addresses = db.relationship('Address', backref='user', lazy='dynamic')
+
+    @staticmethod
+    def generate_password(pswd):
+        return generate_password_hash(pswd)
+
+    def check_password(self, pswd):
+        return check_password_hash(self.password, pswd)
+
+    def get_token(self, expires_on=600):
+        return jwt.encode({'user_id': self.id, 'exp': time() + expires_on},
+                          app.config['SECRET_KEY']).decode('utf-8')
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "username": self.username,
+            "name": self.name,
+            'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S')
+        }
+
+    def get_goods(self):
+        return self.goods.all()
