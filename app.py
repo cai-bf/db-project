@@ -28,6 +28,8 @@ from controller.goods import goods_bp
 app.register_blueprint(goods_bp)
 from controller.attachment import attach_bp
 app.register_blueprint(attach_bp)
+from controller.address import addr_bp
+app.register_blueprint(addr_bp)
 
 # 引入models
 from model.user import User

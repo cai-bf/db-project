@@ -1,7 +1,6 @@
 # coding:utf-8
 from app import app
 from flask import request, g
-import jwt
 from model.user import User
 
 
@@ -10,8 +9,8 @@ def auth():
     token = request.headers.get('Authorization')
     path = request.path
     if path == '/login' or path == '/register':
-        pass
-        # next
+        if token is not None and app.redis.get(token) is not None:
+            app.redis.delete(token)
     else:
         if token is None:
             return {'errmsg': '未登录或已过期', 'errcode': 401}, 401

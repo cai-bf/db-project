@@ -13,6 +13,7 @@ class Address(db.Model):
     city = db.Column(db.String(30), nullable=False)
     county = db.Column(db.String(30), nullable=False)
     detail = db.Column(db.String(100), nullable=False)
+    code = db.Column(db.String(6), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 
@@ -28,6 +29,13 @@ class Address(db.Model):
             'city': self.city,
             'county': self.county,
             'detail': self.detail,
+            'code': self.code,
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
             'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S')
         }
+
+    def from_dict(self, data):
+        for field in ['name', 'phone', 'province', 'city', 'county', 'detail', 'code']:
+            if field in data:
+                setattr(self, field, data[field])
+
