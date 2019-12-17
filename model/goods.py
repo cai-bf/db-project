@@ -7,6 +7,7 @@ from json import loads
 class Goods(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
     name = db.Column(db.String(100), nullable=False)
     detail = db.Column(db.String(150))
     price = db.Column(db.Float(2), default=0)
@@ -20,6 +21,7 @@ class Goods(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now)
 
     item = db.relationship('Item', backref='goods', lazy='dynamic')
+    category = db.relationship('Category', backref='goods', lazy='dynamic')
 
     def to_dict(self):
         return {
@@ -33,6 +35,8 @@ class Goods(db.Model):
             'view': self.view,
             'img': self.img,
             'imgs': loads(self.imgs),
+            'category_id': self.category_id,
+            'category': self.category.to_dict(),
             # 'state': self.state,
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
             'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S')

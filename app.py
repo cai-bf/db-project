@@ -38,6 +38,7 @@ from model.order import Order
 from model.comment import Comment
 from model.address import Address
 from model.item import Item
+from model.category import Category
 
 
 if __name__ == '__main__':
