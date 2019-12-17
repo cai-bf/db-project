@@ -30,6 +30,8 @@ from controller.attachment import attach_bp
 app.register_blueprint(attach_bp)
 from controller.address import addr_bp
 app.register_blueprint(addr_bp)
+from controller.category import category_bp
+app.register_blueprint(category_bp)
 
 # 引入models
 from model.user import User

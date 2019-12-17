@@ -1,6 +1,7 @@
 # coding:utf-8
 from flask import Blueprint, request, g, jsonify
 from model.goods import Goods
+from model.category import Category
 from json import dumps
 from app import db, app
 
@@ -21,10 +22,15 @@ def post_goods():
     data = request.get_json()
     images = data['imgs']
     images = list(map(lambda x: app.config['IMG_BASE_URL'] + x, images))
-
-    goods = Goods(vendor=user, name=data['name'], detail=data.get('detail'), price=data['price'], stock=data['stock'],
-                  img=images[0], imgs=dumps(images))
-    db.session.add(goods)
-    db.session.commit()
+    try:
+        category = Category.query.filter_by(id=data['category_id']).first()
+        if category is None:
+            raise Exception
+        goods = Goods(vendor=user, name=data['name'], detail=data.get('detail'), price=data['price'],
+                  img=images[0], imgs=dumps(images), category=category)
+        db.session.add(goods)
+        db.session.commit()
+    except:
+        return {'errmsg': '数据出错, 请重新确认', 'errcode': 400}, 400
     return {'errmsg': '发布商品成功', 'errcode': 200}, 200
 
