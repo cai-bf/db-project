@@ -105,6 +105,7 @@ def del_goods(id):
     if goods.sale == 1:
         return {'errmsg': '已售出商品不可删除', 'errcode': 400}, 400
     db.session.delete(goods)
+    db.session.commit()
     return {'errmsg': '删除成功', 'errcode': 200}, 200
 
 
