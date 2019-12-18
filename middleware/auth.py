@@ -4,11 +4,21 @@ from flask import request, g
 from model.user import User
 
 
+PATH = [
+    '/login',
+    '/register',
+    '/goods/search',
+    '/goods/index',
+    '/goods/view',
+    '/categories'
+]
+
+
 @app.before_request
 def auth():
     token = request.headers.get('Authorization')
     path = request.path
-    if path == '/login' or path == '/register':
+    if path in PATH:
         if token is not None and app.redis.get(token) is not None:
             app.redis.delete(token)
     else:

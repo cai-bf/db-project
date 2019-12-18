@@ -47,7 +47,7 @@ def get_sold():
     page = request.args.get('page', 1, type=int)
     data = user.get_sold(page)
     return {
-           'items': [val.to_dict() for val in data.items],
+           'items': [val.to_dict('buyer') for val in data.items],
            'has_next': data.has_next,
            'has_prev': data.has_prev,
            'page': data.page,
@@ -66,7 +66,8 @@ def get_purchases():
     state = request.args.get('state', -1, int)
     STATE = {
         1: '待发货',
-        2: '已发货'
+        2: '已发货',
+        3: '已确认收货'
     }
     if state == -1:
         return {'errmsg': '参数错误, 未选择state参数', 'errcode': 400}, 400
@@ -101,3 +102,14 @@ def edit_state(id):
     order.state = state
     db.session.commit()
     return {'errmsg': '修改状态成功', 'errcode': 200}, 200
+
+
+@order_bp.route('/order/<int:id>/receipt', methods=['POST'])
+def confirm_receipt(id):
+    user = g.current_user
+    order = user.orders.filter_by(state='已发货', id=id).first()
+    if order is None:
+        return {'errmsg': '无法执行操作', 'errcode': 400}, 400
+    order.state = '已确认收货'
+    db.session.commit()
+    return {'errmsg': '已确认收货', 'errcode': 200}, 200

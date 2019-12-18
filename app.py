@@ -34,6 +34,8 @@ from controller.category import category_bp
 app.register_blueprint(category_bp)
 from controller.order import order_bp
 app.register_blueprint(order_bp)
+from controller.comment import comment_bp
+app.register_blueprint(comment_bp)
 
 
 # 引入models

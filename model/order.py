@@ -22,10 +22,10 @@ class Order(db.Model):
 
     items = db.relationship('Item', backref='order', lazy='dynamic')
 
-    comment = db.relationship('Comment', backref='goods', lazy='dynamic')
+    comment = db.relationship('Comment', backref='order', lazy='dynamic')
 
-    def to_dict(self):
-        return {
+    def to_dict(self, user=None):
+        data = {
             'id': self.id,
             'user_id': self.user_id,
             'owner_id': self.owner_id,
@@ -37,3 +37,6 @@ class Order(db.Model):
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
             'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S')
         }
+        if user == 'buyer':
+            data['user'] = self.user.to_dict()
+        return data

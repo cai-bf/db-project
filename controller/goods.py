@@ -94,3 +94,36 @@ def search():
            'next_num': goods.next_num,
            'total': goods.total
        }, 200
+
+
+@goods_bp.route('/goods/<int:id>', methods=['DELETE'])
+def del_goods(id):
+    user = g.current_user
+    goods = user.goods.filter_by(id=id).first()
+    if goods is None:
+        return {'errmsg': '没有权限删除商品', 'errcode': 400}, 400
+    if goods.sale == 1:
+        return {'errmsg': '已售出商品不可删除', 'errcode': 400}, 400
+    db.session.delete(goods)
+    return {'errmsg': '删除成功', 'errcode': 200}, 200
+
+
+@goods_bp.route('/goods/index')
+def index():
+    category_id = request.args.get('category_id', 0, type=int)
+    if category_id == 0:
+        data = Goods.query.order_by(Goods.view.desc()).limit(30).all()
+    else:
+        category = Category.query.filter_by(id=category_id).first()
+        if category is None:
+            return {'errmsg': '分类信息出错', 'errcode': 400}, 400
+        data = Goods.query.filter_by(category_id=category_id).order_by(Goods.view.desc()).limit(30).all()
+    return jsonify([val.to_dict() for val in data]), 200
+
+
+@goods_bp.route('/goods/view')
+def incr_view():
+    id = request.args['id']
+    Goods.query.filter_by(id=id).update({'view': Goods.view + 1})
+    db.session.commit()
+    return "", 204
