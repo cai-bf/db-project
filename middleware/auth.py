@@ -10,6 +10,8 @@ PATH = [
     '/goods/search',
     '/goods/index',
     '/goods/view',
+    '/user/goods',
+    '/user/orders',
     '/categories'
 ]
 

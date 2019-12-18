@@ -52,7 +52,7 @@ class User(db.Model):
         }
 
     def get_goods(self, page, per_page=15):
-        return self.goods.order_by(Goods.updated_at.desc()).filter_by(sale=0).paginate(page, per_page, error_out=False)
+        return self.goods.order_by(Goods.created_at.desc()).filter_by(sale=0).paginate(page, per_page, error_out=False)
 
     def get_sold(self, page, per_page=15):
         return self.sold.order_by(Order.created_at.desc()).paginate(page, per_page, error_out=False)

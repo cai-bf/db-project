@@ -1,6 +1,7 @@
 # coding:utf-8
 from flask import Blueprint, request, g, jsonify
 from model.goods import Goods
+from model.user import User
 from model.category import Category
 from json import dumps
 from app import db, app
@@ -43,6 +44,27 @@ def post_goods():
     except:
         return {'errmsg': '数据出错, 请重新确认', 'errcode': 400}, 400
     return {'errmsg': '发布商品成功', 'errcode': 200}, 200
+
+
+@goods_bp.route('/user/goods', methods=['GET'])
+def get_user_goods():
+    page = request.args.get('page', 1, type=int)
+    if request.args.get('user_id') is None:
+        return {'errmsg': '参数出错', 'errcode': 400}, 400
+
+    user = User.query.filter_by(id=request.args.get('user_id')).first()
+    res = user.get_goods(page)
+    return {
+           'items': [val.to_dict() for val in res.items],
+           'has_next': res.has_next,
+           'has_prev': res.has_prev,
+           'page': res.page,
+           'pages': res.pages,
+           'per_page': res.per_page,
+           'prev_num': res.prev_num,
+           'next_num': res.next_num,
+           'total': res.total
+       }, 200
 
 
 @goods_bp.route('/goods/<int:id>', methods=['PUT'])

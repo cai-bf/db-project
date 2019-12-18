@@ -4,6 +4,7 @@ from flask import g, request, Blueprint
 from model.goods import Goods
 from model.order import Order
 from model.item import Item
+from model.user import User
 
 order_bp = Blueprint('order_bp', __name__)
 
@@ -113,3 +114,27 @@ def confirm_receipt(id):
     order.state = '已确认收货'
     db.session.commit()
     return {'errmsg': '已确认收货', 'errcode': 200}, 200
+
+
+@order_bp.route('/user/orders')
+def get_user_sold():
+    user_id = request.args.get('user_id')
+    if user_id is None:
+        return {'errmsg': '参数出错', 'errcode': 400}, 400
+    user = User.query.filter_by(id=user_id).first()
+    page = request.args.get('page', 1, type=int)
+    data = user.get_sold(page)
+    items = [val.to_dict('buyer') for val in data.items]
+    for item in items:
+        del item['address']
+    return {
+           'items': items,
+           'has_next': data.has_next,
+           'has_prev': data.has_prev,
+           'page': data.page,
+           'pages': data.pages,
+           'per_page': data.per_page,
+           'prev_num': data.prev_num,
+           'next_num': data.next_num,
+           'total': data.total
+       }, 200
