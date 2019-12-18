@@ -19,8 +19,9 @@ def auth():
     token = request.headers.get('Authorization')
     path = request.path
     if path in PATH:
-        if token is not None and app.redis.get(token) is not None:
-            app.redis.delete(token)
+        if path == '/login' or path == '/register':
+            if token is not None and app.redis.get(token) is not None:
+                app.redis.delete(token)
     else:
         if token is None:
             return {'errmsg': '未登录或已过期', 'errcode': 401}, 401
