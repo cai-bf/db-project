@@ -18,6 +18,8 @@ def update_user():
     user = g.current_user
     data = request.get_json()
     if data.get('password') is not None and data['password'].strip() != '':
+        if data.get('old_password') is None or user.check_password(data.get('old_password')) is False:
+            return {'errmsg': '原密码错误', 'errcode': 400}, 400
         user.password = User.generate_password(data['password'])
     if data.get('name') is not None and data['name'].strip() != '':
         user.name = data['name']

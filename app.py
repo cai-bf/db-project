@@ -32,6 +32,9 @@ from controller.address import addr_bp
 app.register_blueprint(addr_bp)
 from controller.category import category_bp
 app.register_blueprint(category_bp)
+from controller.order import order_bp
+app.register_blueprint(order_bp)
+
 
 # 引入models
 from model.user import User

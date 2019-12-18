@@ -2,9 +2,10 @@
 import datetime
 import random
 import string
-
 from app import db, app
 from werkzeug.security import generate_password_hash, check_password_hash
+from model.goods import Goods
+from model.order import Order
 
 
 def rand_token_str(size=128):
@@ -50,5 +51,12 @@ class User(db.Model):
             'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S')
         }
 
-    def get_goods(self):
-        return self.goods.all()
+    def get_goods(self, page, per_page=15):
+        return self.goods.order_by(Goods.updated_at.desc()).filter_by(sale=0).paginate(page, per_page, error_out=False)
+
+    def get_sold(self, page, per_page=15):
+        return self.sold.order_by(Order.created_at.desc()).paginate(page, per_page, error_out=False)
+
+    def get_orders(self, page, state, per_page=15):
+        return self.orders.order_by(Order.created_at.desc()).filter_by(state=state)\
+            .paginate(page, per_page, error_out=False)

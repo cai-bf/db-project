@@ -15,7 +15,7 @@ class Order(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     order_id = db.Column(db.String(18), default=rand_digit_str, unique=True)
-    address_id = db.Column(db.Integer, db.ForeignKey('address.id'))
+    address_id = db.Column(db.Integer, db.ForeignKey('address.id'), nullable=False)
     state = db.Column(db.String(20), default='待发货', comment='订单状态')
     created_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
@@ -32,8 +32,8 @@ class Order(db.Model):
             'address_id': self.address_id,
             'state': self.state,
             'address': self.address.to_dict(),
-            'item': self.items.to_dict(),
-            'comment': self.comment.to_dict() if self.comment else None,
+            'item': [item.to_dict() for item in self.items],
+            'comment': self.comment.first().to_dict() if self.comment.first() else None,
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
             'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S')
         }
