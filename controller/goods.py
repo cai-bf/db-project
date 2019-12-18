@@ -30,9 +30,9 @@ def get_goods():
 def post_goods():
     user = g.current_user
     data = request.get_json()
-    images = data['imgs']
-    images = list(map(lambda x: app.config['IMG_BASE_URL'] + x, images))
     try:
+        images = data['imgs']
+        images = list(map(lambda x: app.config['IMG_BASE_URL'] + x, images))
         category = Category.query.filter_by(id=data['category_id']).first()
         if category is None:
             raise Exception
