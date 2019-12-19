@@ -34,6 +34,7 @@ class Order(db.Model):
             'address': self.address.to_dict(),
             'item': [item.to_dict() for item in self.items],
             'comment': self.comment.first().to_dict() if self.comment.first() else None,
+            'order_number': self.order_id,
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
             'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S')
         }
