@@ -135,12 +135,12 @@ def del_goods(id):
 def index():
     category_id = request.args.get('category_id', 0, type=int)
     if category_id == 0:
-        data = Goods.query.order_by(Goods.view.desc()).limit(30).all()
+        data = Goods.query.filter_by(sale=0).order_by(Goods.view.desc()).limit(30).all()
     else:
         category = Category.query.filter_by(id=category_id).first()
         if category is None:
             return {'errmsg': '分类信息出错', 'errcode': 400}, 400
-        data = Goods.query.filter_by(category_id=category_id).order_by(Goods.view.desc()).limit(30).all()
+        data = Goods.query.filter_by(category_id=category_id, sale=0).order_by(Goods.view.desc()).limit(30).all()
     return jsonify([val.to_dict() for val in data]), 200
 
 
